@@ -5,13 +5,17 @@
 ```dart
 SnackBarShow.show(
     context: context,
-    duration: 6000,
-    height: 48.0,
-    snackBarAlignment: SnackBarAlignment.bottomLeftToRigth,
+    snackBarAlignment: SnackBarAlignment.bottom,
     widget: Material(
-        color: Colors.transparent,
-        child: Padding(
+        child: Container(
+            height: 48.0,
+            width: double.infinity,
+            alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 22.0),
+            decoration: BoxDecoration(
+                color: Colors.blueGrey,
+                borderRadius: BorderRadius.circular(0),
+            ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -19,18 +23,13 @@ SnackBarShow.show(
                         'Customizable SnackBar',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
-                    GestureDetector(
-                        onTap: () => print('SnackBar demo'),
-                        child: Container(
-                            alignment: Alignment.center,
-                            color: Colors.transparent,
-                            width: 60.0,
-                            child: const Text(
+                    TextButton(
+                        onPressed: () => print('SnackBar demo'), 
+                        child: const Text(
                             'Ok',
                             style: TextStyle(fontSize: 16, color: Colors.white),
-                            ),
                         ),
-                    )
+                    ),
                 ],
             ),
         ),
@@ -39,7 +38,7 @@ SnackBarShow.show(
 ```
 
 
-- Exemplo de uso um widget semelhante uma Toast
+- Exemplo de uso um widget semelhante a uma Toast
 ```dart
 Toast.show(
     context: context,
@@ -48,7 +47,7 @@ Toast.show(
 ```
 
 
-- Exemplo de uso um widget semelhante uma FloatingButton
+- Exemplo de uso um widget semelhante a uma FloatingButton
 ```dart
 FloatingWidget.show(
     context: context,

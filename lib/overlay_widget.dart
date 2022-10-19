@@ -1,5 +1,5 @@
 library overlay_widget;
 
-export './src/floatingWidget.dart';
-export './src/snackBarAlert.dart';
-export './src/toastAlert.dart';
+export 'src/floating_widget.dart';
+export 'src/snackbar_alert.dart';
+export 'src/toast_alert.dart';

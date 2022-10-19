@@ -1,8 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:overlay_widget/src/snackBarAlert.dart';
-import 'package:overlay_widget/src/toastAlert.dart';
-import 'package:overlay_widget/src/floatingWidget.dart';
+import 'package:overlay_widget/overlay_widget.dart';
 
 void main() => runApp(const MyApp());
 
@@ -34,13 +32,17 @@ class MyCustomizedOverlay extends StatelessWidget {
               onTap: () {
                 SnackBarShow.show(
                   context: context,
-                  duration: 6000,
-                  height: 48.0,
-                  snackBarAlignment: SnackBarAlignment.bottomLeftToRigth,
+                  snackBarAlignment: SnackBarAlignment.bottom,
                   widget: Material(
-                    color: Colors.transparent,
-                    child: Padding(
+                    child: Container(
+                      height: 48.0,
+                      width: double.infinity,
+                      alignment: Alignment.center,
                       padding: const EdgeInsets.symmetric(horizontal: 22.0),
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey,
+                        borderRadius: BorderRadius.circular(0),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -48,18 +50,13 @@ class MyCustomizedOverlay extends StatelessWidget {
                             'Customizable SnackBar',
                             style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
-                          GestureDetector(
-                            onTap: () => print('SnackBar demo'),
-                            child: Container(
-                              alignment: Alignment.center,
-                              color: Colors.transparent,
-                              width: 60.0,
-                              child: const Text(
-                                'Ok',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
+                          TextButton(
+                            onPressed: () => print('SnackBar demo'), 
+                            child: const Text(
+                              'Ok',
+                              style: TextStyle(fontSize: 16, color: Colors.white),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -72,7 +69,12 @@ class MyCustomizedOverlay extends StatelessWidget {
               onTap: () {
                 Toast.show(
                   context: context,
-                  message: 'my massage'
+                  toastAlignment: ToastAlignment.bottom,
+                  child: const Text(
+                    'my massage',
+                    softWrap:  true,
+                    style: TextStyle(fontSize: 17.0, color: Colors.white),
+                  ),
                 );
               },
             ),

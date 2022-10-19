@@ -54,7 +54,7 @@ class FloatingWidgetAlert extends OverlayRoute {
 
   @override
   void dispose() {
-    print('---- Disposing FloatingWidget ----');
+    //print('---- Disposing FloatingWidget ----');
 
     onClosing?.call();
 
@@ -91,9 +91,9 @@ class FloatingWidgetAlert extends OverlayRoute {
               //print('${offset!.dx}  ${offset!.dy}');
               //print('${details.globalPosition.dx}');
 
-              if (super.overlayEntries.isNotEmpty)
+              if (super.overlayEntries.isNotEmpty) {
                 super.overlayEntries[0].markNeedsBuild(); // setState
-
+              }
               if (offset!.dx < 0 || offset!.dy < 0) dispose();
             },
             onLongPress: dispose,

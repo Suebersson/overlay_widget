@@ -4,65 +4,54 @@ import 'package:flutter/material.dart';
 /// O Widget [ToastAlert] pode ser chamado diretamente pela classe ou pelo método [Toast.show]
 abstract class Toast {
   /// Exemplo de uso: Toast.show(context: context, message: 'My toast');
-  static void show(
-      {required BuildContext context,
-      required String message,
-      TextStyle textStyle =
-          const TextStyle(fontSize: 17.0, color: Colors.white),
-      Color backgroundColor = Colors.black54,
-      Duration duration = const Duration(milliseconds: 3500),
-      ToastAlignment toastAlignment = ToastAlignment.center,
-      BorderRadiusGeometry? borderRadius}) {
+  static void show({
+    required BuildContext context,
+    required child,
+    Color backgroundColor = Colors.black54,
+    Duration duration = const Duration(milliseconds: 3500),
+    ToastAlignment toastAlignment = ToastAlignment.bottom,
+    BorderRadiusGeometry? borderRadius,
+    EdgeInsetsGeometry margin =
+        const EdgeInsets.symmetric(vertical: 30.0, horizontal: 15.0),
+    EdgeInsetsGeometry padding = const EdgeInsets.all(7.0),
+  }) {
     Navigator.push(
       context,
       ToastAlert(
-          message: message,
-          backgroundColor: backgroundColor,
-          textStyle: textStyle,
-          duration: duration,
-          toastAlignment: toastAlignment,
-          borderRadius: borderRadius),
+        child: child,
+        backgroundColor: backgroundColor,
+        duration: duration,
+        toastAlignment: toastAlignment,
+        borderRadius: borderRadius,
+        margin: margin,
+        padding: padding,
+      ),
     );
   }
 }
 
 class ToastAlert extends OverlayRoute {
-  /// Navegar para um [widget] semelhante a uma Toast do tipo [overlay]
+  /// Navegar para um [Widget] de sobreposição semelhante a uma Toast do tipo [Overlay]
   /// sem bloquear a rota(página) ativa
-  final String message;
-  final TextStyle textStyle;
+  final Text child;
   final Color backgroundColor;
   final Duration duration;
   final ToastAlignment toastAlignment;
   final BorderRadiusGeometry? borderRadius;
+  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry padding;
 
-  ToastAlert(
-      {required this.message,
-      this.textStyle = const TextStyle(fontSize: 17.0, color: Colors.white),
-      this.backgroundColor = Colors.black54,
-      this.duration = const Duration(milliseconds: 3500),
-      this.toastAlignment = ToastAlignment.center,
-      this.borderRadius})
-      : super(settings: const RouteSettings(name: 'ToastAlert'));
+  ToastAlert({
+    required this.child,
+    this.backgroundColor = Colors.black54,
+    this.duration = const Duration(milliseconds: 3500),
+    this.toastAlignment = ToastAlignment.bottom,
+    this.borderRadius,
+    this.margin = const EdgeInsets.symmetric(vertical: 30.0, horizontal: 15.0),
+    this.padding = const EdgeInsets.all(7.0),
+  }) : super(settings: const RouteSettings(name: 'ToastAlert'));
 
   late AnimationController _animationController;
-
-  void _close() {
-    /*Future.delayed(
-      duration,
-      (){
-        if(isCurrent){
-          navigator?.pop();
-        }else if(isActive){
-          //navigator?.removeRoute(this); 
-          navigator?.finalizeRoute(this);  
-        }else{
-          dispose();
-        }
-      }
-    );*/
-    Future.delayed(duration, dispose);
-  }
 
   @override
   void install() {
@@ -76,8 +65,9 @@ class ToastAlert extends OverlayRoute {
     super.install();
 
     Future.delayed(duration, () {
-      _animationController.reverse();
-      _close();
+      _animationController.reverse().then((_) {
+        Future.delayed(const Duration(seconds: 2), dispose);
+      });
     });
   }
 
@@ -89,13 +79,26 @@ class ToastAlert extends OverlayRoute {
 
   @override
   void dispose() {
-    print('---- Disposing Toast ----');
-
+    //print('---- Disposing Toast ----');
     _animationController.dispose();
     super.overlayEntries[0].remove();
     super.dispose();
   }
 
+  /// Desse widget prá baixo deve ser evitados usar um Container
+  /// porque ele tem o comportamento de se expandir oculpando o resto
+  /// da largura disponivel na tela mesmo quando o texto for pequeno.
+  ///
+  /// Dessa forma o [Material] substítui o [Container] e será sempre
+  /// compactado, com quebra de linha e limitado a largura da tela
+  ///
+  /// Componentes nessa ordem:
+  ///
+  /// Padding
+  /// Center
+  /// Material
+  /// Padding
+  /// child: Text()
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
@@ -109,20 +112,14 @@ class ToastAlert extends OverlayRoute {
               child: LimitedBox(
                 maxWidth: MediaQuery.of(context).size.width,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 65.0, horizontal: 15.0),
+                  padding: margin,
                   child: Center(
                     child: Material(
                       color: backgroundColor,
-                      borderRadius: borderRadius ?? BorderRadius.circular(30.0),
+                      borderRadius: borderRadius ?? BorderRadius.circular(5.0),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 30.0, vertical: 7.0),
-                        child: Text(
-                          message,
-                          softWrap: true,
-                          style: textStyle,
-                        ),
+                        padding: padding,
+                        child: child,
                       ),
                     ),
                   ),
@@ -138,7 +135,6 @@ class ToastAlert extends OverlayRoute {
 
 enum ToastAlignment { top, center, bottom }
 
-/// Definir o aliamento da [ToastAlert]
 extension on ToastAlignment {
   Alignment get getAlignment {
     switch (this) {
