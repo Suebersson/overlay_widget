@@ -51,7 +51,7 @@ class ToastAlert extends OverlayRoute {
     this.padding = const EdgeInsets.all(7.0),
   }) : super(settings: const RouteSettings(name: 'ToastAlert'));
 
-  late AnimationController _animationController;
+  late final AnimationController _animationController;
 
   @override
   void install() {
@@ -64,11 +64,7 @@ class ToastAlert extends OverlayRoute {
 
     super.install();
 
-    Future.delayed(duration, () {
-      _animationController.reverse().then((_) {
-        Future.delayed(const Duration(seconds: 2), dispose);
-      });
-    });
+    Future<void>.delayed(duration, overlayClose);
   }
 
   @override
@@ -77,11 +73,18 @@ class ToastAlert extends OverlayRoute {
     return _animationController.forward();
   }
 
+  void overlayClose() async {
+    await _animationController.reverse();
+
+    //navigator?.pop();
+    navigator?.removeRoute(this);
+  }
+
   @override
   void dispose() {
     //print('---- Disposing Toast ----');
     _animationController.dispose();
-    super.overlayEntries[0].remove();
+    super.overlayEntries.first.dispose();
     super.dispose();
   }
 

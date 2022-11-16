@@ -1,6 +1,6 @@
 name: overlay_widget
 description: Package criada para facilitar o uso de widget flutuantes(Overlays) que nos permite customizar de acordo com as necessidades da app.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/Suebersson/overlay_widget.git
 repository: https://github.com/Suebersson/overlay_widget
 

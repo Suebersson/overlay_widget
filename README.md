@@ -6,34 +6,42 @@
 SnackBarShow.show(
     context: context,
     snackBarAlignment: SnackBarAlignment.bottom,
-    widget: Material(
+    widget: (dispose) {
+    return Material(
         child: Container(
-            height: 48.0,
-            width: double.infinity,
-            alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 22.0),
-            decoration: BoxDecoration(
-                color: Colors.blueGrey,
-                borderRadius: BorderRadius.circular(0),
-            ),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                    const Text(
-                        'Customizable SnackBar',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                    ),
-                    TextButton(
-                        onPressed: () => print('SnackBar demo'), 
-                        child: const Text(
-                            'Ok',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                    ),
-                ],
-            ),
+        height: 48.0,
+        width: double.infinity,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 22.0),
+        decoration: BoxDecoration(
+            color: Colors.blueGrey,
+            borderRadius: BorderRadius.circular(0),
         ),
-    ),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+            const Text(
+                'Customizable SnackBar',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+            TextButton(
+                onPressed: () {
+
+                print('SnackBar demo');
+
+                dispose.call();
+                
+                }, 
+                child: const Text(
+                'Ok',
+                style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+            ),
+            ],
+        ),
+        ),
+    );
+    }
 );
 ```
 

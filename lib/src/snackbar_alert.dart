@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 ///  Classe responsável por chamar/exibir o widget através do objeto [SnackbarAlert]
 abstract class SnackBarShow {
   static void show(
       {required BuildContext context,
-      required Widget widget,
+      required Widget Function(Function) widget,
       TypeAnimation typeAnimation = TypeAnimation.slide,
       Duration duration = const Duration(seconds: 6),
       Duration animationDisplay = const Duration(milliseconds: 700),
@@ -14,7 +14,7 @@ abstract class SnackBarShow {
       SnackBarAlignment snackBarAlignment = SnackBarAlignment.bottom,
       void Function()? onVisible,
       void Function()? onClosing,
-      void Function()? onTap}) {
+      void Function(Function)? onTap}) {
     Navigator.push(
       context,
       SnackbarAlert(
@@ -37,7 +37,8 @@ abstract class SnackBarShow {
 class SnackbarAlert extends OverlayRoute {
   /// Chamar um widget customizável de sobreposição[Overlay] que substitui a [SnackBar] da biblioteca do [Material],
   /// sem em bloquear a rota(página) ativa que possibilita ao desenvolvedor uma maior customização
-  final Widget widget;
+  final Widget Function(Function)
+      widget; // Através desse widget será possível chamar o método [dispose]
   final TypeAnimation typeAnimation;
   final Duration duration;
   final Duration animationDisplay;
@@ -46,7 +47,8 @@ class SnackbarAlert extends OverlayRoute {
   final SnackBarAlignment snackBarAlignment;
   final void Function()? onVisible;
   final void Function()? onClosing;
-  final void Function()? onTap;
+  final void Function(Function)?
+      onTap; // Através dessa função será possível chamar o método [dispose]
 
   SnackbarAlert({
     required this.widget,
@@ -61,8 +63,9 @@ class SnackbarAlert extends OverlayRoute {
     this.onTap,
   }) : super(settings: const RouteSettings(name: 'SnackbarAlert'));
 
-  late AnimationController _animationController;
+  late final AnimationController _animationController;
   bool _canDispose = true;
+  bool _disposed = false;
 
   @override
   void install() {
@@ -82,17 +85,11 @@ class SnackbarAlert extends OverlayRoute {
     /// Função para contagem regressiva da duração de exibição da Snackbar
     /// que pausa a contagem quando o usuário tocar e manter pressionado o widget
     Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_canDispose && durationCounter <= 0) {
+      if (_disposed) {
         timer.cancel();
-        if (_animationController.isCompleted) {
-          _animationController.reverse().then((_) {
-            Future.delayed(
-                Duration(milliseconds: animationReverse.inMilliseconds + 500),
-                dispose);
-          });
-        } else {
-          dispose();
-        }
+      } else if (_canDispose && durationCounter <= 0) {
+        timer.cancel();
+        overlayClose();
       } else if (_canDispose) {
         durationCounter--;
       }
@@ -105,48 +102,47 @@ class SnackbarAlert extends OverlayRoute {
     return _animationController.forward();
   }
 
+  void overlayClose() async {
+    _disposed = true;
+
+    onClosing?.call();
+
+    await _animationController.reverse();
+
+    //navigator?.pop();
+    navigator?.removeRoute(this);
+  }
+
   @override
   void dispose() {
     //print('---- Disposing SnackBar ----');
 
-    onClosing?.call();
-
-    if (_animationController.isCompleted) {
-      _animationController.reverse().then((_) {
-        _animationController.dispose();
-      });
-    } else {
-      try {
-        _animationController.dispose();
-      } catch (e) {
-        //throw '---- Controller disposed ----';
-      }
-    }
-
-    if (super.overlayEntries.isNotEmpty) super.overlayEntries[0].remove();
-
+    _animationController.dispose();
+    super.overlayEntries.first.dispose();
     super.dispose();
   }
 
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
-      OverlayEntry(builder: (_) {
+      OverlayEntry(builder: (context) {
         return SafeArea(
           child: _SelectedSnackbarAnimation(
             snackbarAlert: this,
             child: Align(
               alignment: snackBarAlignment.getAlignment,
               child: Dismissible(
-                onDismissed: (_) => dispose(),
+                onDismissed: (_) => overlayClose(),
                 key: const Key("dismissibleSnackbar"),
                 direction: DismissDirection.horizontal,
                 child: GestureDetector(
                   onTapUp: (_) => _canDispose = true,
                   onLongPressUp: () => _canDispose = true,
                   onTapDown: (_) => _canDispose = false,
-                  onTap: onTap,
-                  child: widget,
+                  onTap: () {
+                    onTap?.call(overlayClose);
+                  },
+                  child: widget(overlayClose),
                 ),
               ),
             ),
@@ -157,7 +153,13 @@ class SnackbarAlert extends OverlayRoute {
   }
 }
 
-enum TypeAnimation { slide, scale, fade, slideWithScale, fadeWithScale }
+enum TypeAnimation {
+  slide,
+  scale,
+  fade,
+  slideWithScale,
+  fadeWithScale,
+}
 
 @immutable
 class _SelectedSnackbarAnimation extends StatelessWidget {

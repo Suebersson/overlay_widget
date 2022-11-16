@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 /// Classe responsável por chamar/exibir o widget através do objeto [FloatingWidgetAlert]
 abstract class FloatingWidget {
@@ -13,12 +13,13 @@ abstract class FloatingWidget {
     Navigator.push(
       context,
       FloatingWidgetAlert(
-          widget: widget,
-          offset: offset,
-          duration: duration,
-          onClick: onClick,
-          onVisible: onVisible,
-          onClosing: onClosing),
+        widget: widget,
+        offset: offset,
+        duration: duration,
+        onClick: onClick,
+        onVisible: onVisible,
+        onClosing: onClosing,
+      ),
     );
   }
 }
@@ -49,54 +50,57 @@ class FloatingWidgetAlert extends OverlayRoute {
 
     onVisible?.call();
 
-    if (duration != null) Future.delayed(duration!, dispose);
+    if (duration != null) Future.delayed(duration!, overlayClose);
+  }
+
+  void overlayClose() {
+    onClosing?.call();
+
+    //navigator?.pop();
+    navigator?.removeRoute(this);
+
+    // if(isCurrent){
+    //   navigator?.pop();
+    // }else if(isActive){
+    //   //navigator?.removeRoute(this);
+    //   navigator?.finalizeRoute(this);
+    // }
   }
 
   @override
   void dispose() {
     //print('---- Disposing FloatingWidget ----');
 
-    onClosing?.call();
-
-    /*if(isCurrent){
-      navigator?.pop();
-    }else if(isActive){
-      //navigator?.removeRoute(this); 
-      navigator?.finalizeRoute(this);  
-    }else{
-      super.overlayEntries[0].remove();
-      super.dispose();
-    }*/
-
-    super.overlayEntries[0].remove();
+    super.overlayEntries.first.dispose();
     super.dispose();
   }
 
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
-      OverlayEntry(builder: (_) {
-        offset ??= Offset(MediaQuery.of(_).size.width - 110,
-            MediaQuery.of(_).size.height - 98);
-        //print(MediaQuery.of(_).size.width);
-        //print(MediaQuery.of(_).size.height);
+      OverlayEntry(builder: (context) {
+        Size size = MediaQuery.of(context).size;
+        offset ??= Offset(size.width - 110, size.height - 98);
+        //print(size.width);
+        //print(size.height);
         return Positioned(
           left: offset!.dx,
           top: offset!.dy,
           child: GestureDetector(
             onPanUpdate: (details) {
-              //offset += details.delta; //(gerando erro)
-              offset = Offset(
-                  offset!.dx + details.delta.dx, offset!.dy + details.delta.dy);
+              //offset += details.delta; // não permite fazer a soma se o operando pode ser nulo
+              offset = offset! + details.delta;
+
               //print('${offset!.dx}  ${offset!.dy}');
               //print('${details.globalPosition.dx}');
 
               if (super.overlayEntries.isNotEmpty) {
-                super.overlayEntries[0].markNeedsBuild(); // setState
+                super.overlayEntries.first.markNeedsBuild(); // setState
               }
-              if (offset!.dx < 0 || offset!.dy < 0) dispose();
+
+              if (offset!.dx < 0 || offset!.dy < 0) overlayClose();
             },
-            onLongPress: dispose,
+            onLongPress: overlayClose,
             onTap: onClick,
             child: widget,
           ),
