@@ -1,14 +1,36 @@
 import 'package:flutter/material.dart';
 
-/// Chamar um widget customizavel de sobreposição(overlay) semelhante a uma Toast nativa do android.
-/// O Widget [ToastAlert] pode ser chamado diretamente pela classe ou pelo método [Toast.show]
-abstract class Toast {
-  /// Exemplo de uso: Toast.show(context: context, message: 'My toast');
+/// Navegar para um [Widget] de sobreposição semelhante a uma `Toast` do tipo [Overlay]
+/// sem bloquear a rota(página) ativa
+class ToastAlert extends OverlayRoute {
+  final Text child;
+  final Color backgroundColor;
+  final Duration duration;
+  final ToastAlignment toastAlignment;
+  final BorderRadiusGeometry? borderRadius;
+  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry padding;
+
+  ToastAlert({
+    required this.child,
+    this.backgroundColor = Colors.black54,
+    this.duration = const Duration(milliseconds: 4000),
+    this.toastAlignment = ToastAlignment.bottom,
+    this.borderRadius,
+    this.margin = const EdgeInsets.symmetric(vertical: 30.0, horizontal: 15.0),
+    this.padding = const EdgeInsets.all(7.0),
+  }) : super(settings: const RouteSettings(name: 'ToastAlert'));
+
+  late final AnimationController _animationController;
+
+  /// Exibir uma widget customizavel de sobreposição(overlay) semelhante a uma `Toast` nativa do android.
+  /// A Widget [ToastAlert] pode ser chamado diretamente pela classe ou pelo método [ToastAlert.show]
   static void show({
+    // Exemplo de uso: Toast.show(context: context, message: 'My toast');
     required BuildContext context,
-    required child,
+    required Text child,
     Color backgroundColor = Colors.black54,
-    Duration duration = const Duration(milliseconds: 3500),
+    Duration duration = const Duration(milliseconds: 4000),
     ToastAlignment toastAlignment = ToastAlignment.bottom,
     BorderRadiusGeometry? borderRadius,
     EdgeInsetsGeometry margin =
@@ -28,30 +50,6 @@ abstract class Toast {
       ),
     );
   }
-}
-
-class ToastAlert extends OverlayRoute {
-  /// Navegar para um [Widget] de sobreposição semelhante a uma Toast do tipo [Overlay]
-  /// sem bloquear a rota(página) ativa
-  final Text child;
-  final Color backgroundColor;
-  final Duration duration;
-  final ToastAlignment toastAlignment;
-  final BorderRadiusGeometry? borderRadius;
-  final EdgeInsetsGeometry margin;
-  final EdgeInsetsGeometry padding;
-
-  ToastAlert({
-    required this.child,
-    this.backgroundColor = Colors.black54,
-    this.duration = const Duration(milliseconds: 3500),
-    this.toastAlignment = ToastAlignment.bottom,
-    this.borderRadius,
-    this.margin = const EdgeInsets.symmetric(vertical: 30.0, horizontal: 15.0),
-    this.padding = const EdgeInsets.all(7.0),
-  }) : super(settings: const RouteSettings(name: 'ToastAlert'));
-
-  late final AnimationController _animationController;
 
   @override
   void install() {
@@ -82,7 +80,7 @@ class ToastAlert extends OverlayRoute {
 
   @override
   void dispose() {
-    //print('---- Disposing Toast ----');
+    // debugPrint('---- Disposing Toast ----');
     _animationController.dispose();
     super.overlayEntries.first.dispose();
     super.dispose();

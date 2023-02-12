@@ -30,54 +30,17 @@ class MyCustomizedOverlay extends StatelessWidget {
             GenericButton(
               name: 'SnackBarShow',
               onTap: () {
-                SnackBarShow.show(
-                  context: context,
-                  snackBarAlignment: SnackBarAlignment.bottom,
-                  widget: (dispose) {
-                    return Material(
-                      child: Container(
-                        height: 48.0,
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                        decoration: BoxDecoration(
-                          color: Colors.blueGrey,
-                          borderRadius: BorderRadius.circular(0),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Customizable SnackBar',
-                              style: TextStyle(fontSize: 16, color: Colors.white),
-                            ),
-                            TextButton(
-                              onPressed: () {
-
-                                print('SnackBar demo');
-
-                                dispose.call();
-                                
-                              }, 
-                              child: const Text(
-                                'Ok',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }
+                SnackbarAlert.show(
+                  context: context, 
+                  child: const SnackbarDemo(),
                 );
               },
             ),
             GenericButton(
               name: 'ToastShow',
               onTap: () {
-                Toast.show(
+                ToastAlert.show(
                   context: context,
-                  toastAlignment: ToastAlignment.bottom,
                   child: const Text(
                     'my massage',
                     softWrap:  true,
@@ -89,7 +52,7 @@ class MyCustomizedOverlay extends StatelessWidget {
             GenericButton(
               name: 'FloatingWidget',
               onTap: () {
-                FloatingWidget.show(
+                FloatingWidgetAlert.show(
                   context: context,
                   widget: Container(
                     height: 60,

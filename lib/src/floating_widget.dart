@@ -1,7 +1,26 @@
 import 'package:flutter/material.dart';
 
-/// Classe responsável por chamar/exibir o widget através do objeto [FloatingWidgetAlert]
-abstract class FloatingWidget {
+/// Chamar um widget flutuante customizável de sobreposição[Overlay]
+/// sem em bloquear a rota(página) ativa
+///
+class FloatingWidgetAlert extends OverlayRoute {
+  final Widget widget;
+  Offset? offset;
+  final Duration? duration;
+  final void Function()? onClick;
+  final void Function()? onVisible;
+  final void Function()? onClosing;
+
+  FloatingWidgetAlert(
+      {required this.widget,
+      this.offset,
+      this.duration,
+      this.onClick,
+      this.onVisible,
+      this.onClosing})
+      : super(settings: const RouteSettings(name: 'FloatingWidgetAlert'));
+
+  /// Chamar/exibir a widget [FloatingWidgetAlert]
   static void show(
       {required BuildContext context,
       required Widget widget,
@@ -22,27 +41,6 @@ abstract class FloatingWidget {
       ),
     );
   }
-}
-
-class FloatingWidgetAlert extends OverlayRoute {
-  /// Chamar um widget flutuante customizável de sobreposição[Overlay]
-  /// sem em bloquear a rota(página) ativa
-  ///
-  final Widget widget;
-  Offset? offset;
-  final Duration? duration;
-  final void Function()? onClick;
-  final void Function()? onVisible;
-  final void Function()? onClosing;
-
-  FloatingWidgetAlert(
-      {required this.widget,
-      this.offset,
-      this.duration,
-      this.onClick,
-      this.onVisible,
-      this.onClosing})
-      : super(settings: const RouteSettings(name: 'FloatingWidgetAlert'));
 
   @override
   void install() {
@@ -69,8 +67,7 @@ class FloatingWidgetAlert extends OverlayRoute {
 
   @override
   void dispose() {
-    //print('---- Disposing FloatingWidget ----');
-
+    // debugPrint('---- Disposing FloatingWidget ----');
     super.overlayEntries.first.dispose();
     super.dispose();
   }

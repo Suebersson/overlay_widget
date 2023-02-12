@@ -1,52 +1,20 @@
-## Package criada para facilitar o uso de widget flutuantes(Overlay) que nos permita customizar de acordo com as necessidades da app
+## Package criada para facilitar o uso de widget flutuantes(Overlay) que nos permite customizar de acordo com as necessidades da app
 
+</br>
+</br>
 
- - Exemplo de uso um widget semelhante a uma SnackBar
+- Exemplo de uso de uma widget semelhante a uma [SnackBar]
 ```dart
-SnackBarShow.show(
-    context: context,
-    snackBarAlignment: SnackBarAlignment.bottom,
-    widget: (dispose) {
-    return Material(
-        child: Container(
-        height: 48.0,
-        width: double.infinity,
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(horizontal: 22.0),
-        decoration: BoxDecoration(
-            color: Colors.blueGrey,
-            borderRadius: BorderRadius.circular(0),
-        ),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-            const Text(
-                'Customizable SnackBar',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-            TextButton(
-                onPressed: () {
-
-                print('SnackBar demo');
-
-                dispose.call();
-                
-                }, 
-                child: const Text(
-                'Ok',
-                style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-            ),
-            ],
-        ),
-        ),
-    );
-    }
+SnackbarAlert.show(
+    context: context, 
+    child: const SnackbarDemo(),
 );
 ```
 
+</br>
+</br>
 
-- Exemplo de uso um widget semelhante a uma Toast
+- Exemplo de uso de uma widget semelhante a uma [Toast]
 ```dart
 Toast.show(
     context: context,
@@ -54,8 +22,21 @@ Toast.show(
 );
 ```
 
+</br>
+</br>
 
-- Exemplo de uso um widget semelhante a uma FloatingButton
+- Exemplo de uso de uma widget semelhante a uma [Drawer]
+```dart
+DrawerAlert.show(
+    context: context,
+    child: const DrawerDemo(),
+);
+```
+
+</br>
+</br>
+
+- Exemplo de uso de uma widget semelhante a uma [FloatingButton]
 ```dart
 FloatingWidget.show(
     context: context,

@@ -1,84 +1,69 @@
 import 'dart:async';
-import 'package:flutter/widgets.dart';
-
-///  Classe responsável por chamar/exibir o widget através do objeto [SnackbarAlert]
-abstract class SnackBarShow {
-  static void show(
-      {required BuildContext context,
-      required Widget Function(Function) widget,
-      TypeAnimation typeAnimation = TypeAnimation.slide,
-      Duration duration = const Duration(seconds: 6),
-      Duration animationDisplay = const Duration(milliseconds: 700),
-      Duration animationReverse = const Duration(milliseconds: 1500),
-      Curve curve = Curves.ease,
-      SnackBarAlignment snackBarAlignment = SnackBarAlignment.bottom,
-      void Function()? onVisible,
-      void Function()? onClosing,
-      void Function(Function)? onTap}) {
-    Navigator.push(
-      context,
-      SnackbarAlert(
-        widget: widget,
-        typeAnimation: typeAnimation,
-        duration: duration,
-        animationDisplay: animationDisplay,
-        animationReverse: animationReverse,
-        curve: curve,
-        snackBarAlignment: snackBarAlignment,
-        onVisible: onVisible,
-        onClosing: onClosing,
-        onTap: onTap,
-      ),
-    );
-  }
-}
+import 'package:flutter/material.dart';
 
 /// Exemplo de `SnackBarShow.show(context: context, widget: const MyWidget());`
 class SnackbarAlert extends OverlayRoute {
   /// Chamar um widget customizável de sobreposição[Overlay] que substitui a [SnackBar] da biblioteca do [Material],
   /// sem em bloquear a rota(página) ativa que possibilita ao desenvolvedor uma maior customização
-  final Widget Function(Function)
-      widget; // Através desse widget será possível chamar o método [dispose]
+  final Widget child;
   final TypeAnimation typeAnimation;
   final Duration duration;
-  final Duration animationDisplay;
   final Duration animationReverse;
   final Curve curve;
   final SnackBarAlignment snackBarAlignment;
   final void Function()? onVisible;
   final void Function()? onClosing;
-  final void Function(Function)?
-      onTap; // Através dessa função será possível chamar o método [dispose]
 
   SnackbarAlert({
-    required this.widget,
+    required this.child,
     this.typeAnimation = TypeAnimation.slide,
     this.duration = const Duration(seconds: 6),
-    this.animationDisplay = const Duration(milliseconds: 700),
-    this.animationReverse = const Duration(milliseconds: 1500),
-    this.curve = Curves.ease,
+    this.animationReverse = const Duration(milliseconds: 2000),
+    this.curve = Curves.linear,
     this.snackBarAlignment = SnackBarAlignment.bottom,
     this.onVisible,
     this.onClosing,
-    this.onTap,
   }) : super(settings: const RouteSettings(name: 'SnackbarAlert'));
 
   late final AnimationController _animationController;
   bool _canDispose = true;
   bool _disposed = false;
 
+  static void show(
+      {required BuildContext context,
+      required Widget child,
+      TypeAnimation typeAnimation = TypeAnimation.slide,
+      Duration duration = const Duration(seconds: 6),
+      Duration animationReverse = const Duration(milliseconds: 2000),
+      Curve curve = Curves.linear,
+      SnackBarAlignment snackBarAlignment = SnackBarAlignment.bottom,
+      void Function()? onVisible,
+      void Function()? onClosing}) {
+    Navigator.push(
+      context,
+      SnackbarAlert(
+        child: child,
+        typeAnimation: typeAnimation,
+        duration: duration,
+        animationReverse: animationReverse,
+        curve: curve,
+        snackBarAlignment: snackBarAlignment,
+        onVisible: onVisible,
+        onClosing: onClosing,
+      ),
+    );
+  }
+
   @override
   void install() {
     _animationController = AnimationController(
-      duration: animationDisplay,
+      duration: const Duration(milliseconds: 400),
       reverseDuration: animationReverse,
       debugLabel: 'animationSnackBarController',
       vsync: navigator!,
     );
 
     onVisible?.call();
-
-    super.install();
 
     int durationCounter = duration.inSeconds;
 
@@ -94,6 +79,8 @@ class SnackbarAlert extends OverlayRoute {
         durationCounter--;
       }
     });
+
+    super.install();
   }
 
   @override
@@ -114,10 +101,18 @@ class SnackbarAlert extends OverlayRoute {
   }
 
   @override
-  void dispose() {
-    //print('---- Disposing SnackBar ----');
+  void dispose() async {
+    // debugPrint('---- Disposing SnackBar ----');
 
-    _animationController.dispose();
+    if (_disposed) {
+      _animationController.dispose();
+    } else {
+      _disposed = true;
+      onClosing?.call();
+      await _animationController.reverse();
+      _animationController.dispose();
+    }
+
     super.overlayEntries.first.dispose();
     super.dispose();
   }
@@ -139,10 +134,7 @@ class SnackbarAlert extends OverlayRoute {
                   onTapUp: (_) => _canDispose = true,
                   onLongPressUp: () => _canDispose = true,
                   onTapDown: (_) => _canDispose = false,
-                  onTap: () {
-                    onTap?.call(overlayClose);
-                  },
-                  child: widget(overlayClose),
+                  child: child,
                 ),
               ),
             ),
@@ -221,7 +213,7 @@ class _SelectedSnackbarAnimation extends StatelessWidget {
           ),
         );
       default:
-        return const SizedBox();
+        return const SizedBox.shrink();
     }
   }
 }
@@ -267,5 +259,45 @@ extension on SnackBarAlignment {
       default:
         return const Offset(0.0, 1.0);
     }
+  }
+}
+
+/// Exemplo de uma `Snackbar`
+class SnackbarDemo extends StatelessWidget {
+  const SnackbarDemo({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Container(
+        height: 48.0,
+        width: double.infinity,
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 22.0),
+        decoration: BoxDecoration(
+          color: Colors.blueGrey,
+          borderRadius: BorderRadius.circular(0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Customizable SnackBar',
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+            Builder(builder: (context) {
+              return TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Ok',
+                  style: TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
   }
 }
