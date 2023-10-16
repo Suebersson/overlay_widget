@@ -5,3 +5,5 @@
 ## 1.0.2 Melhorias no dispose
 
 ## 1.0.3 Implementação da Overlay [DrawerAlert]
+
+## 1.0.4 Correção de erros nos métodos de dispose

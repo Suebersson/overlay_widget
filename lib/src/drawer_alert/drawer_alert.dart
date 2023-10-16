@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+part './alignment.dart';
+part './drawer_demo.dart';
+
 /// Chamar um widget customizável de sobreposição[Overlay] que substitui a
 /// `Drawer` da biblioteca [Material], sem em bloquear a rota(página) ativa
 /// que possibilita ao desenvolvedor uma maior customização
@@ -85,9 +88,19 @@ class DrawerAlert extends OverlayRoute {
   @override
   void dispose() {
     // debugPrint('---- Disposing DrawerAlert ----');
+
     _animationController.dispose();
-    super.overlayEntries.first.dispose();
+
     super.dispose();
+
+    // if (overlayEntries.isNotEmpty) {
+    //   // A overlay ainda(mounted) está na árvore de widget
+    //   if (overlayEntries.first.mounted) {
+    //     debugPrint('Quantidade de overlays na árvore: ${overlayEntries.length}');
+    //     overlayEntries.first.dispose();
+    //  // super.overlayEntries.first.remove();
+    //   }
+    // }
   }
 
   @override
@@ -132,44 +145,5 @@ class DrawerAlert extends OverlayRoute {
         );
       }),
     ];
-  }
-}
-
-enum DrawerAlertAlignment {
-  leftToRigth,
-  rigthToLeft,
-}
-
-/// Widget exemplo para criar uma drawer
-class DrawerDemo extends StatelessWidget {
-  const DrawerDemo({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.blueGrey,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 20.0, left: 15, bottom: 8.0),
-              child: Text('Drawer demo',
-                  style: TextStyle(fontSize: 20, color: Colors.white)),
-            ),
-            const Divider(color: Colors.white, height: 3.5),
-            Expanded(
-              child: Container(
-                color: Colors.blueGrey[400],
-                margin: const EdgeInsets.all(5.0),
-                padding: const EdgeInsets.all(5.0),
-                alignment: Alignment.center,
-                child: const Text('seus widgets',
-                    style: TextStyle(fontSize: 20, color: Colors.white)),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

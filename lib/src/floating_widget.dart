@@ -68,8 +68,17 @@ class FloatingWidgetAlert extends OverlayRoute {
   @override
   void dispose() {
     // debugPrint('---- Disposing FloatingWidget ----');
-    super.overlayEntries.first.dispose();
+
     super.dispose();
+
+    // if (overlayEntries.isNotEmpty) {
+    //   // A overlay ainda(mounted) está na árvore de widget
+    //   if (overlayEntries.first.mounted) {
+    //     debugPrint('Quantidade de overlays na árvore: ${overlayEntries.length}');
+    //     overlayEntries.first.dispose();
+    //  // super.overlayEntries.first.remove();
+    //   }
+    // }
   }
 
   @override

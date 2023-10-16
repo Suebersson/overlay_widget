@@ -14,7 +14,7 @@ class ToastAlert extends OverlayRoute {
   ToastAlert({
     required this.child,
     this.backgroundColor = Colors.black54,
-    this.duration = const Duration(milliseconds: 4000),
+    this.duration = const Duration(milliseconds: 3000),
     this.toastAlignment = ToastAlignment.bottom,
     this.borderRadius,
     this.margin = const EdgeInsets.symmetric(vertical: 30.0, horizontal: 15.0),
@@ -74,16 +74,26 @@ class ToastAlert extends OverlayRoute {
   void overlayClose() async {
     await _animationController.reverse();
 
-    //navigator?.pop();
+    // navigator?.pop();
     navigator?.removeRoute(this);
   }
 
   @override
   void dispose() {
     // debugPrint('---- Disposing Toast ----');
+
     _animationController.dispose();
-    super.overlayEntries.first.dispose();
+
     super.dispose();
+
+    // if (overlayEntries.isNotEmpty) {
+    //   // A overlay ainda(mounted) está na árvore de widget
+    //   if (overlayEntries.first.mounted) {
+    //     debugPrint('Quantidade de overlays na árvore: ${overlayEntries.length}');
+    //     overlayEntries.first.dispose();
+    //  // super.overlayEntries.first.remove();
+    //   }
+    // }
   }
 
   /// Desse widget prá baixo deve ser evitados usar um Container
@@ -111,7 +121,7 @@ class ToastAlert extends OverlayRoute {
               alignment: toastAlignment.getAlignment,
               fit: BoxFit.none,
               child: LimitedBox(
-                maxWidth: MediaQuery.of(context).size.width,
+                maxWidth: MediaQuery.sizeOf(context).width,
                 child: Padding(
                   padding: margin,
                   child: Center(
