@@ -22,17 +22,19 @@ class SnackbarDemo extends StatelessWidget {
               'Customizable SnackBar',
               style: TextStyle(fontSize: 16, color: Colors.white),
             ),
-            Builder(builder: (context) {
-              return TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Ok',
-                  style: TextStyle(fontSize: 16, color: Colors.white),
-                ),
-              );
-            }),
+            Builder(
+              builder: (context) {
+                return TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Ok',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),

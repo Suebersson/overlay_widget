@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// Navegar para um [Widget] de sobreposição semelhante a uma `Toast` do tipo [Overlay]
@@ -8,8 +10,7 @@ class ToastAlert extends OverlayRoute {
   final Duration duration;
   final ToastAlignment toastAlignment;
   final BorderRadiusGeometry? borderRadius;
-  final EdgeInsetsGeometry margin;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry margin, padding;
 
   ToastAlert({
     required this.child,
@@ -23,6 +24,8 @@ class ToastAlert extends OverlayRoute {
 
   late final AnimationController _animationController;
 
+  late final Timer timer;
+
   /// Exibir uma widget customizavel de sobreposição(overlay) semelhante a uma `Toast` nativa do android.
   /// A Widget [ToastAlert] pode ser chamado diretamente pela classe ou pelo método [ToastAlert.show]
   static void show({
@@ -30,7 +33,7 @@ class ToastAlert extends OverlayRoute {
     required BuildContext context,
     required Text child,
     Color backgroundColor = Colors.black54,
-    Duration duration = const Duration(milliseconds: 4000),
+    Duration duration = const Duration(milliseconds: 3000),
     ToastAlignment toastAlignment = ToastAlignment.bottom,
     BorderRadiusGeometry? borderRadius,
     EdgeInsetsGeometry margin =
@@ -60,9 +63,9 @@ class ToastAlert extends OverlayRoute {
       vsync: navigator!,
     );
 
-    super.install();
+    timer = Timer(duration, overlayClose);
 
-    Future<void>.delayed(duration, overlayClose);
+    super.install();
   }
 
   @override
@@ -73,7 +76,6 @@ class ToastAlert extends OverlayRoute {
 
   void overlayClose() async {
     await _animationController.reverse();
-
     // navigator?.pop();
     navigator?.removeRoute(this);
   }
@@ -81,6 +83,8 @@ class ToastAlert extends OverlayRoute {
   @override
   void dispose() {
     // debugPrint('---- Disposing Toast ----');
+
+    if (timer.isActive) timer.cancel();
 
     _animationController.dispose();
 
@@ -113,33 +117,36 @@ class ToastAlert extends OverlayRoute {
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
-      OverlayEntry(builder: (context) {
-        return SafeArea(
-          child: FadeTransition(
-            opacity: _animationController.view,
-            child: FittedBox(
-              alignment: toastAlignment.getAlignment,
-              fit: BoxFit.none,
-              child: LimitedBox(
-                maxWidth: MediaQuery.sizeOf(context).width,
-                child: Padding(
-                  padding: margin,
-                  child: Center(
-                    child: Material(
-                      color: backgroundColor,
-                      borderRadius: borderRadius ?? BorderRadius.circular(5.0),
-                      child: Padding(
-                        padding: padding,
-                        child: child,
+      OverlayEntry(
+        builder: (context) {
+          return SafeArea(
+            child: FadeTransition(
+              opacity: _animationController.view,
+              child: FittedBox(
+                alignment: toastAlignment.getAlignment,
+                fit: BoxFit.none,
+                child: LimitedBox(
+                  maxWidth: MediaQuery.sizeOf(context).width,
+                  child: Padding(
+                    padding: margin,
+                    child: Center(
+                      child: Material(
+                        color: backgroundColor,
+                        borderRadius:
+                            borderRadius ?? BorderRadius.circular(5.0),
+                        child: Padding(
+                          padding: padding,
+                          child: child,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     ];
   }
 }

@@ -11,24 +11,25 @@ class FloatingWidgetAlert extends OverlayRoute {
   final void Function()? onVisible;
   final void Function()? onClosing;
 
-  FloatingWidgetAlert(
-      {required this.widget,
-      this.offset,
-      this.duration,
-      this.onClick,
-      this.onVisible,
-      this.onClosing})
-      : super(settings: const RouteSettings(name: 'FloatingWidgetAlert'));
+  FloatingWidgetAlert({
+    required this.widget,
+    this.offset,
+    this.duration,
+    this.onClick,
+    this.onVisible,
+    this.onClosing,
+  }) : super(settings: const RouteSettings(name: 'FloatingWidgetAlert'));
 
   /// Chamar/exibir a widget [FloatingWidgetAlert]
-  static void show(
-      {required BuildContext context,
-      required Widget widget,
-      Offset? offset,
-      final Duration? duration,
-      void Function()? onClick,
-      final void Function()? onVisible,
-      void Function()? onClosing}) {
+  static void show({
+    required BuildContext context,
+    required Widget widget,
+    Offset? offset,
+    final Duration? duration,
+    void Function()? onClick,
+    final void Function()? onVisible,
+    void Function()? onClosing,
+  }) {
     Navigator.push(
       context,
       FloatingWidgetAlert(
@@ -84,34 +85,36 @@ class FloatingWidgetAlert extends OverlayRoute {
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
-      OverlayEntry(builder: (context) {
-        Size size = MediaQuery.of(context).size;
-        offset ??= Offset(size.width - 110, size.height - 98);
-        //print(size.width);
-        //print(size.height);
-        return Positioned(
-          left: offset!.dx,
-          top: offset!.dy,
-          child: GestureDetector(
-            onPanUpdate: (details) {
-              //offset += details.delta; // não permite fazer a soma se o operando pode ser nulo
-              offset = offset! + details.delta;
+      OverlayEntry(
+        builder: (context) {
+          final Size size = MediaQuery.sizeOf(context);
+          offset ??= Offset(size.width - 110, size.height - 98);
+          //print(size.width);
+          //print(size.height);
+          return Positioned(
+            left: offset!.dx,
+            top: offset!.dy,
+            child: GestureDetector(
+              onPanUpdate: (details) {
+                //offset += details.delta; // não permite fazer a soma se o operando pode ser nulo
+                offset = offset! + details.delta;
 
-              //print('${offset!.dx}  ${offset!.dy}');
-              //print('${details.globalPosition.dx}');
+                //print('${offset!.dx}  ${offset!.dy}');
+                //print('${details.globalPosition.dx}');
 
-              if (super.overlayEntries.isNotEmpty) {
-                super.overlayEntries.first.markNeedsBuild(); // setState
-              }
+                if (super.overlayEntries.isNotEmpty) {
+                  super.overlayEntries.first.markNeedsBuild(); // setState
+                }
 
-              if (offset!.dx < 0 || offset!.dy < 0) overlayClose();
-            },
-            onLongPress: overlayClose,
-            onTap: onClick,
-            child: widget,
-          ),
-        );
-      }),
+                if (offset!.dx < 0 || offset!.dy < 0) overlayClose();
+              },
+              onLongPress: overlayClose,
+              onTap: onClick,
+              child: widget,
+            ),
+          );
+        },
+      ),
     ];
   }
 }

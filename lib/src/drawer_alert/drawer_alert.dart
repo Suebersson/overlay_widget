@@ -28,13 +28,14 @@ class DrawerAlert extends OverlayRoute {
   late final AnimationController _animationController;
 
   /// Exibir a [DrawerAlert]
-  static void show(
-      {required BuildContext context,
-      required Widget child,
-      Duration transitionTime = const Duration(milliseconds: 500),
-      DrawerAlertAlignment alignment = DrawerAlertAlignment.leftToRigth,
-      void Function()? onVisible,
-      void Function()? onClosing}) {
+  static void show({
+    required BuildContext context,
+    required Widget child,
+    Duration transitionTime = const Duration(milliseconds: 500),
+    DrawerAlertAlignment alignment = DrawerAlertAlignment.leftToRigth,
+    void Function()? onVisible,
+    void Function()? onClosing,
+  }) {
     Navigator.push(
       context,
       DrawerAlert(
@@ -68,11 +69,13 @@ class DrawerAlert extends OverlayRoute {
     _animation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.linear,
-      reverseCurve: Curves.linear,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.linear,
+        reverseCurve: Curves.linear,
+      ),
+    );
 
     onVisible?.call();
 
@@ -106,26 +109,26 @@ class DrawerAlert extends OverlayRoute {
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
-      OverlayEntry(builder: (context) {
-        return SlideTransition(
-          position: Tween(
-                  begin: Offset(
-                      alignment == DrawerAlertAlignment.leftToRigth
-                          ? -1.0
-                          : 1.0,
-                      0.0),
-                  end: Offset.zero)
-              .animate(_animation),
-          child: Dismissible(
-            onDismissed: (_) => overlayClose(),
-            key: const Key("DrawerAlert"),
-            direction: DismissDirection.horizontal,
-            child: Stack(
-              alignment: alignment == DrawerAlertAlignment.leftToRigth
-                  ? Alignment.centerLeft
-                  : Alignment.centerRight,
-              children: [
-                GestureDetector(
+      OverlayEntry(
+        builder: (context) {
+          return SlideTransition(
+            position: Tween(
+              begin: Offset(
+                alignment == DrawerAlertAlignment.leftToRigth ? -1.0 : 1.0,
+                0.0,
+              ),
+              end: Offset.zero,
+            ).animate(_animation),
+            child: Dismissible(
+              onDismissed: (_) => overlayClose(),
+              key: const Key("DrawerAlert"),
+              direction: DismissDirection.horizontal,
+              child: Stack(
+                alignment: alignment == DrawerAlertAlignment.leftToRigth
+                    ? Alignment.centerLeft
+                    : Alignment.centerRight,
+                children: [
+                  GestureDetector(
                     onTap: overlayClose,
                     child: const SizedBox(
                       height: double.infinity,
@@ -133,17 +136,19 @@ class DrawerAlert extends OverlayRoute {
                       child: ColoredBox(
                         color: Colors.transparent,
                       ),
-                    )),
-                SizedBox(
-                  height: double.infinity,
-                  width: width,
-                  child: child,
-                ),
-              ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: double.infinity,
+                    width: width,
+                    child: child,
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     ];
   }
 }

@@ -1,6 +1,5 @@
 part of './snackbar_alert.dart';
 
-@immutable
 class _SelectedSnackbarAnimation extends StatelessWidget {
   const _SelectedSnackbarAnimation({
     Key? key,
@@ -16,35 +15,45 @@ class _SelectedSnackbarAnimation extends StatelessWidget {
     switch (snackbarAlert.typeAnimation) {
       case TypeAnimation.slide:
         return SlideTransition(
-          position: snackbarAlert._animationController.view.drive(Tween(
-                  begin: snackbarAlert.snackBarAlignment.getOffSet,
-                  end: Offset.zero)
-              .chain(CurveTween(curve: snackbarAlert.curve))),
+          position: snackbarAlert._animationController.view.drive(
+            Tween(
+              begin: snackbarAlert.snackBarAlignment.getOffSet,
+              end: Offset.zero,
+            ).chain(CurveTween(curve: snackbarAlert.curve)),
+          ),
           child: child,
         );
       case TypeAnimation.scale:
         return ScaleTransition(
-          scale: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+          scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+            CurvedAnimation(
               parent: snackbarAlert._animationController,
-              curve: snackbarAlert.curve)),
+              curve: snackbarAlert.curve,
+            ),
+          ),
           alignment: Alignment.center,
           child: child,
         );
       case TypeAnimation.fade:
         return FadeTransition(
-          child: child,
           opacity: snackbarAlert._animationController,
+          child: child,
         );
       case TypeAnimation.slideWithScale:
         return SlideTransition(
-          position: snackbarAlert._animationController.drive(Tween(
-                  begin: snackbarAlert.snackBarAlignment.getOffSet,
-                  end: Offset.zero)
-              .chain(CurveTween(curve: snackbarAlert.curve))),
+          position: snackbarAlert._animationController.drive(
+            Tween(
+              begin: snackbarAlert.snackBarAlignment.getOffSet,
+              end: Offset.zero,
+            ).chain(CurveTween(curve: snackbarAlert.curve)),
+          ),
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+              CurvedAnimation(
                 parent: snackbarAlert._animationController,
-                curve: snackbarAlert.curve)),
+                curve: snackbarAlert.curve,
+              ),
+            ),
             child: child,
           ),
         );
@@ -52,11 +61,14 @@ class _SelectedSnackbarAnimation extends StatelessWidget {
         return FadeTransition(
           opacity: snackbarAlert._animationController,
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+            scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+              CurvedAnimation(
                 parent: snackbarAlert._animationController,
-                curve: snackbarAlert.curve)),
-            child: child,
+                curve: snackbarAlert.curve,
+              ),
+            ),
             alignment: Alignment.center,
+            child: child,
           ),
         );
       default:

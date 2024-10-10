@@ -41,16 +41,17 @@ class SnackbarAlert extends OverlayRoute {
   bool _canDispose = true;
   bool _disposed = false;
 
-  static void show(
-      {required BuildContext context,
-      required Widget child,
-      TypeAnimation typeAnimation = TypeAnimation.slide,
-      Duration duration = const Duration(seconds: 6),
-      Duration animationReverse = const Duration(milliseconds: 2000),
-      Curve curve = Curves.linear,
-      SnackBarAlignment snackBarAlignment = SnackBarAlignment.bottom,
-      void Function()? onVisible,
-      void Function()? onClosing}) {
+  static void show({
+    required BuildContext context,
+    required Widget child,
+    TypeAnimation typeAnimation = TypeAnimation.slide,
+    Duration duration = const Duration(seconds: 6),
+    Duration animationReverse = const Duration(milliseconds: 2000),
+    Curve curve = Curves.linear,
+    SnackBarAlignment snackBarAlignment = SnackBarAlignment.bottom,
+    void Function()? onVisible,
+    void Function()? onClosing,
+  }) {
     Navigator.push(
       context,
       SnackbarAlert(
@@ -140,27 +141,29 @@ class SnackbarAlert extends OverlayRoute {
   @override
   Iterable<OverlayEntry> createOverlayEntries() {
     return <OverlayEntry>[
-      OverlayEntry(builder: (context) {
-        return SafeArea(
-          child: _SelectedSnackbarAnimation(
-            snackbarAlert: this,
-            child: Align(
-              alignment: snackBarAlignment.getAlignment,
-              child: Dismissible(
-                onDismissed: (_) => overlayClose(),
-                key: const Key("dismissibleSnackbar"),
-                direction: DismissDirection.horizontal,
-                child: GestureDetector(
-                  onTapUp: (_) => _canDispose = true,
-                  onLongPressUp: () => _canDispose = true,
-                  onTapDown: (_) => _canDispose = false,
-                  child: child,
+      OverlayEntry(
+        builder: (context) {
+          return SafeArea(
+            child: _SelectedSnackbarAnimation(
+              snackbarAlert: this,
+              child: Align(
+                alignment: snackBarAlignment.getAlignment,
+                child: Dismissible(
+                  onDismissed: (_) => overlayClose(),
+                  key: const Key("dismissibleSnackbar"),
+                  direction: DismissDirection.horizontal,
+                  child: GestureDetector(
+                    onTapUp: (_) => _canDispose = true,
+                    onLongPressUp: () => _canDispose = true,
+                    onTapDown: (_) => _canDispose = false,
+                    child: child,
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      }),
+          );
+        },
+      ),
     ];
   }
 }
